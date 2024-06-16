@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace VContainer.Internal
 {
-    sealed class CompositeDisposable : IDisposable
+    internal sealed class CompositeDisposable : IDisposable
     {
         readonly Stack<IDisposable> disposables = new Stack<IDisposable>();
 
@@ -29,6 +29,27 @@ namespace VContainer.Internal
             lock (disposables)
             {
                 disposables.Push(disposable);
+            }
+        }
+
+        internal static class Pool
+        {
+            static readonly Stack<CompositeDisposable> _pool = new Stack<CompositeDisposable>();
+
+            internal static CompositeDisposable Get()
+            {
+                if (_pool.Count == 0)
+                {
+                    return new CompositeDisposable();
+                }
+
+                return _pool.Pop();
+            }
+        
+            internal static void DisposeAndRelease(CompositeDisposable compositeDisposable)
+            {
+                compositeDisposable.Dispose();
+                _pool.Push(compositeDisposable);
             }
         }
     }
