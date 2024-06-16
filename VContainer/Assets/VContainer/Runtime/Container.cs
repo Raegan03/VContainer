@@ -147,8 +147,7 @@ namespace VContainer
             }
             sharedInstances.Clear();
             
-            CompositeDisposable.Pool.DisposeAndRelease(disposables);
-            disposables = null;
+            CompositeDisposable.Pool.DisposeAndRelease(ref disposables);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -288,8 +287,7 @@ namespace VContainer
             rootScope.Dispose();
             sharedInstances.Clear();
             
-            CompositeDisposable.Pool.DisposeAndRelease(disposables);
-            disposables = null;
+            CompositeDisposable.Pool.DisposeAndRelease(ref disposables);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

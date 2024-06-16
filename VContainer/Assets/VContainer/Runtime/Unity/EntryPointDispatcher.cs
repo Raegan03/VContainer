@@ -144,8 +144,7 @@ namespace VContainer.Unity
 
         public void Dispose()
         {
-            CompositeDisposable.Pool.DisposeAndRelease(disposable);
-            disposable = null;
+            CompositeDisposable.Pool.DisposeAndRelease(ref disposable);
         }
     }
 }
