@@ -64,8 +64,9 @@ namespace VContainer
 
         readonly Registry registry;
         readonly ConcurrentDictionary<Registration, Lazy<object>> sharedInstances = new ConcurrentDictionary<Registration, Lazy<object>>();
-        readonly CompositeDisposable disposables = CompositeDisposable.Pool.Get();
         readonly Func<Registration, Lazy<object>> createInstance;
+        
+        CompositeDisposable disposables = CompositeDisposable.Pool.Get();
 
         internal ScopedContainer(
             Registry registry,
@@ -147,6 +148,7 @@ namespace VContainer
             sharedInstances.Clear();
             
             CompositeDisposable.Pool.DisposeAndRelease(disposables);
+            disposables = null;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -210,8 +212,9 @@ namespace VContainer
         readonly Registry registry;
         readonly IScopedObjectResolver rootScope;
         readonly ConcurrentDictionary<Registration, Lazy<object>> sharedInstances = new ConcurrentDictionary<Registration, Lazy<object>>();
-        readonly CompositeDisposable disposables = CompositeDisposable.Pool.Get();
         readonly Func<Registration, Lazy<object>> createInstance;
+        
+        CompositeDisposable disposables = CompositeDisposable.Pool.Get();
 
         internal Container(Registry registry, object applicationOrigin = null)
         {
@@ -286,6 +289,7 @@ namespace VContainer
             sharedInstances.Clear();
             
             CompositeDisposable.Pool.DisposeAndRelease(disposables);
+            disposables = null;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

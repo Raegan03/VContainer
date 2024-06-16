@@ -10,7 +10,8 @@ namespace VContainer.Unity
     public sealed class EntryPointDispatcher : IDisposable
     {
         readonly IObjectResolver container;
-        readonly CompositeDisposable disposable = CompositeDisposable.Pool.Get();
+        
+        CompositeDisposable disposable = CompositeDisposable.Pool.Get();
 
         [Inject]
         public EntryPointDispatcher(IObjectResolver container)
@@ -144,6 +145,7 @@ namespace VContainer.Unity
         public void Dispose()
         {
             CompositeDisposable.Pool.DisposeAndRelease(disposable);
+            disposable = null;
         }
     }
 }
