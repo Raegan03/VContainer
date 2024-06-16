@@ -42,12 +42,15 @@ namespace VContainer.Internal
             /// <returns>Instance of <see cref="CompositeDisposable"/>.</returns>
             internal static CompositeDisposable Get()
             {
-                if (_pool.Count == 0)
+                lock (_pool)
                 {
-                    return new CompositeDisposable();
-                }
+                    if (_pool.Count == 0)
+                    {
+                        return new CompositeDisposable();
+                    }
 
-                return _pool.Pop();
+                    return _pool.Pop();
+                }
             }
             
             /// <summary>
@@ -57,10 +60,13 @@ namespace VContainer.Internal
             /// <param name="compositeDisposable">Reference to an instance of <see cref="CompositeDisposable"/>.</param>
             internal static void DisposeAndRelease(ref CompositeDisposable compositeDisposable)
             {
-                compositeDisposable.Dispose();
-                _pool.Push(compositeDisposable);
+                lock (_pool)
+                {
+                    compositeDisposable.Dispose();
+                    _pool.Push(compositeDisposable);
 
-                compositeDisposable = null;
+                    compositeDisposable = null;
+                }
             }
         }
     }

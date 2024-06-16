@@ -7,7 +7,6 @@ namespace VContainer.Internal
     {
         const int DefaultCapacity = 32;
 
-        [ThreadStatic] 
         private static readonly Stack<List<T>> _pool = new Stack<List<T>>(4);
         
         /// <summary>
@@ -34,12 +33,15 @@ namespace VContainer.Internal
         /// <returns></returns>
         internal static List<T> Get()
         {
-            if (_pool.Count == 0)
+            lock (_pool)
             {
-                return new List<T>(DefaultCapacity);
-            }
+                if (_pool.Count == 0)
+                {
+                    return new List<T>(DefaultCapacity);
+                }
 
-            return _pool.Pop();
+                return _pool.Pop();
+            }
         }
 
         /// <summary>
@@ -59,8 +61,11 @@ namespace VContainer.Internal
         /// <param name="buffer"></param>
         internal static void Release(List<T> buffer)
         {
-            buffer.Clear();
-            _pool.Push(buffer);
+            lock (_pool)
+            {
+                buffer.Clear();
+                _pool.Push(buffer);
+            }
         }
     }
 }
