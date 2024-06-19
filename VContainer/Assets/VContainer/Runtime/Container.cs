@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using VContainer.Diagnostics;
 using VContainer.Internal;
@@ -63,9 +63,9 @@ namespace VContainer
         public DiagnosticsCollector Diagnostics { get; set; }
 
         readonly Registry registry;
-        readonly ConcurrentDictionary<Registration, Lazy<object>> sharedInstances = new ConcurrentDictionary<Registration, Lazy<object>>();
         readonly Func<Registration, Lazy<object>> createInstance;
-        
+
+        Dictionary<Registration, Lazy<object>> sharedInstances = DictionaryPool<Registration, Lazy<object>>.Get();
         CompositeDisposable disposables = CompositeDisposable.Pool.Get();
 
         internal ScopedContainer(
@@ -145,7 +145,9 @@ namespace VContainer
             {
                 Diagnostics.Clear();
             }
-            sharedInstances.Clear();
+            
+            DictionaryPool<Registration, Lazy<object>>.Release(sharedInstances);
+            sharedInstances = null;
             
             CompositeDisposable.Pool.DisposeAndRelease(ref disposables);
         }
@@ -175,6 +177,11 @@ namespace VContainer
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         object CreateTrackedInstance(Registration registration)
         {
+            if (sharedInstances == null)
+            {
+                return default;
+            }
+            
             var lazy = sharedInstances.GetOrAdd(registration, createInstance);
             var created = lazy.IsValueCreated;
             var instance = lazy.Value;
@@ -210,9 +217,9 @@ namespace VContainer
 
         readonly Registry registry;
         readonly IScopedObjectResolver rootScope;
-        readonly ConcurrentDictionary<Registration, Lazy<object>> sharedInstances = new ConcurrentDictionary<Registration, Lazy<object>>();
         readonly Func<Registration, Lazy<object>> createInstance;
         
+        Dictionary<Registration, Lazy<object>> sharedInstances = DictionaryPool<Registration, Lazy<object>>.Get();
         CompositeDisposable disposables = CompositeDisposable.Pool.Get();
 
         internal Container(Registry registry, object applicationOrigin = null)
@@ -285,8 +292,10 @@ namespace VContainer
                 Diagnostics.Clear();
             }
             rootScope.Dispose();
-            sharedInstances.Clear();
             
+            DictionaryPool<Registration, Lazy<object>>.Release(sharedInstances);
+            sharedInstances = null;
+
             CompositeDisposable.Pool.DisposeAndRelease(ref disposables);
         }
 
@@ -296,6 +305,11 @@ namespace VContainer
             switch (registration.Lifetime)
             {
                 case Lifetime.Singleton:
+                    if (sharedInstances == null)
+                    {
+                        return default;
+                    }
+                    
                     var singleton = sharedInstances.GetOrAdd(registration, createInstance);
                     if (!singleton.IsValueCreated && singleton.Value is IDisposable disposable && !(registration.Provider is ExistingInstanceProvider))
                     {

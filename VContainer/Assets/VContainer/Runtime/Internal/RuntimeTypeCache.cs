@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
@@ -7,11 +6,11 @@ namespace VContainer.Internal
 {
     static class RuntimeTypeCache
     {
-        static readonly ConcurrentDictionary<Type, Type> OpenGenericTypes = new ConcurrentDictionary<Type, Type>();
-        static readonly ConcurrentDictionary<Type, Type[]> GenericTypeParameters = new ConcurrentDictionary<Type, Type[]>();
-        static readonly ConcurrentDictionary<Type, Type> ArrayTypes = new ConcurrentDictionary<Type, Type>();
-        static readonly ConcurrentDictionary<Type, Type> EnumerableTypes = new ConcurrentDictionary<Type, Type>();
-        static readonly ConcurrentDictionary<Type, Type> ReadOnlyListTypes = new ConcurrentDictionary<Type, Type>();
+        static readonly Dictionary<Type, Type> OpenGenericTypes = new Dictionary<Type, Type>();
+        static readonly Dictionary<Type, Type[]> GenericTypeParameters = new Dictionary<Type, Type[]>();
+        static readonly Dictionary<Type, Type> ArrayTypes = new Dictionary<Type, Type>();
+        static readonly Dictionary<Type, Type> EnumerableTypes = new Dictionary<Type, Type>();
+        static readonly Dictionary<Type, Type> ReadOnlyListTypes = new Dictionary<Type, Type>();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Type OpenGenericTypeOf(Type closedGenericType)

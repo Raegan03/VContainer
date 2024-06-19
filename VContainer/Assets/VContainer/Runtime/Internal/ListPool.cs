@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace VContainer.Internal
 {
@@ -31,6 +32,7 @@ namespace VContainer.Internal
         /// Get a buffer from the pool.
         /// </summary>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static List<T> Get()
         {
             lock (_pool)
@@ -49,6 +51,7 @@ namespace VContainer.Internal
         /// </summary>
         /// <param name="buffer"></param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static BufferScope Get(out List<T> buffer)
         {
             buffer = Get();
@@ -59,6 +62,7 @@ namespace VContainer.Internal
         /// Declare a buffer won't be used anymore and put it back to the pool.  
         /// </summary>
         /// <param name="buffer"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void Release(List<T> buffer)
         {
             lock (_pool)

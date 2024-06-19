@@ -40,6 +40,7 @@ namespace VContainer.Internal
             /// Gets a <see cref="CompositeDisposable"/> from the pool or creates a new instance of it.
             /// </summary>
             /// <returns>Instance of <see cref="CompositeDisposable"/>.</returns>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             internal static CompositeDisposable Get()
             {
                 lock (_pool)
@@ -58,6 +59,7 @@ namespace VContainer.Internal
             /// Ref is used to automatically set the field to a null value to mitigate the chance of leakage.
             /// </summary>
             /// <param name="compositeDisposable">Reference to an instance of <see cref="CompositeDisposable"/>.</param>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             internal static void DisposeAndRelease(ref CompositeDisposable compositeDisposable)
             {
                 lock (_pool)
